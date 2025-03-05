@@ -86,7 +86,7 @@ func streamTags(w http.ResponseWriter, r *http.Request, tableName, tagName strin
 				if err := decoder.DecodeElement(&table, &se); err != nil {
 					return fmt.Errorf("error decoding table: %w", err)
 				}
-				if table.Name != tableName {
+				if table.Name != tableName && tableName != "" {
 					continue
 				}
 				for _, tag := range table.Tags {
@@ -117,8 +117,6 @@ func streamTags(w http.ResponseWriter, r *http.Request, tableName, tagName strin
 					}
 					flusher.Flush()
 				}
-				//stop after the table has been read
-				break
 			}
 		}
 	}
@@ -132,10 +130,10 @@ func tagsHandler(w http.ResponseWriter, r *http.Request) {
 	tagName := r.URL.Query().Get("tag")
 	// from the specs I considered that the table name is required, since we have a list of tags for a specific table
 	// for the same reason the tag is optional
-	if tableName == "" {
-		http.Error(w, "table name required", http.StatusBadRequest)
-		return
-	}
+	//if tableName == "" {
+	//	http.Error(w, "table name required", http.StatusBadRequest)
+	//		return
+	//	}
 	if err := streamTags(w, r, tableName, tagName); err != nil {
 		if err.Error() == "client closed connection" {
 			// added a log message to know when the client closes the connection
