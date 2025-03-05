@@ -100,8 +100,8 @@ func streamTags(w http.ResponseWriter, r *http.Request, tableName, tagName strin
 
 					jsonTag := JSONTag{
 						Writable:    tag.Writable,
-						Path:        fmt.Sprintf("%s:%s", tag.Group, tag.Name),
-						Group:       tag.Group,
+						Path:        fmt.Sprintf("%s:%s", table.Name, tag.Name),
+						Group:       table.Name,
 						Description: descMap,
 						Type:        tag.Type,
 					}
@@ -117,11 +117,11 @@ func streamTags(w http.ResponseWriter, r *http.Request, tableName, tagName strin
 					}
 					flusher.Flush()
 				}
+				//stop after the table has been read
 				break
 			}
 		}
 	}
-
 	w.Write([]byte("]}"))
 	flusher.Flush()
 	return nil
